@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta charset="utf-8">
+<title></title>
+<meta name="description" content="">
+<meta name="author" content="boblemarin">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  html { box-sizing: border-box; }
+  *, *:before, *:after { box-sizing: inherit; }
+
+  body, html {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+    background-color: black;
+    color: white;
+    text-align: center;
+    overflow: hidden;
+  }
+
+  #spiral-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  #spiral-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+</style>
+</head>
+<body>
+
+  <div id="spiral-container">
+    <canvas id="spiral-canvas"></canvas>
+  </div>
+
+  <script type="text/javascript" src="spiral.js"></script>
+
+  <script type="text/javascript">
+    // visual elements
+    var canvas = document.getElementById( 'spiral-canvas' );
+    var menu = new SpiralMenu( canvas );
+
+  </script>
+</body>
+</html>
