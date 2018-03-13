@@ -30,6 +30,12 @@ var SpiralMenu = function( canvas ) {
   var spiralSpeed = 0.012;
   var frameReq = 0;
 
+  // labels
+  var labelPool = [];
+  var leftLabels = [];
+  var rightLabels = [];
+
+
 
   for ( var i = 0; i < numSpirals; ++i ) {
     spirals.push( new Spiral( i * Math.PI, Math.PI * 0.8 ) )
@@ -90,6 +96,7 @@ var SpiralMenu = function( canvas ) {
         var points = spirals[i].rotate(spiralRotation, configuration, 10);
       }
       
+      // position labels
       
 
       // auto stop frame request when idle
