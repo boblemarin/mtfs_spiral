@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8">
+</head>
+<body>
+  <code>
+    <pre id="chose">
+    </pre>
+  </code>
+  <script type="text/javascript">
+
+var parseMedia = false;
+var out = "";
+
+var xmlhttp=new XMLHttpRequest();
+xmlhttp.open("GET","paxton.xml",false);
+if (xmlhttp.overrideMimeType) {
+  xmlhttp.overrideMimeType('text/xml');
+}
+xmlhttp.send();
+var xmlDoc=xmlhttp.responseXML;
+
+add('var menu = [');
+var content=xmlDoc.getElementsByTagName('content')[0];
+var spacer = "  ";
+for (let spiral of content.children) {
+  parse(spiral.children[0], spacer);
+}
+add("];")
+chose.innerText += out;
+
+
+function parse(node, spacer) {
+  add(spacer + "{");
+  add(spacer + '  "type":     "' + node.tagName + '",');
+  add(spacer + '  "title_fr": "' + node.getAttribute("title_fr") + '",');
+  add(spacer + '  "title_en": "' + node.getAttribute("title_en") + '",');
+  if (node.tagName == "section") {
+    add(spacer + '  "content":');
+    add(spacer + '  [');
+    for (let child of node.children) {
+      parse(child, spacer + "    ");
+    }
+    add(spacer + '  ]');
+  } else if (node.tagName == "page" && parseMedia) {
+    add(spacer + '  "media":');
+    add(spacer + '  [');
+    for (let child of node.children) {
+      parseM(child, spacer + "    ");
+    }
+    add(spacer + '  ]');
+  }
+  add(spacer + "},");
+}
+
+function parseM(node, spacer) {
+  add(spacer + "{");
+  add(spacer + '  "type":      "' + node.getAttribute("tope") + '",');
+  add(spacer + '  "source_fr": "' + node.getAttribute("source_fr") + '",');
+  add(spacer + '  "source_en": "' + node.getAttribute("source_en") + '",');
+  if (node.getAttribute("loop")) {
+    add(spacer + '  "loop":      ' + node.getAttribute("loop") + ',');
+  }
+  add(spacer + "},");
+}
+
+function add(txt) {
+  out += txt + "\n";
+}
+
+  </script>
+</body>
+</html>
