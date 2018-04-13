@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta charset="utf-8">
@@ -45,12 +46,13 @@
     <canvas id="spiral-canvas"></canvas>
   </div>
 
+  <script type="text/javascript" src="paxton.js"></script>
   <script type="text/javascript" src="spiral.js"></script>
 
   <script type="text/javascript">
-    // visual elements
+
     var canvas = document.getElementById( 'spiral-canvas' );
-    var menu = new SpiralMenu( canvas );
+    var spiralMenu = new SpiralMenu( canvas, menuContent );
 
   </script>
 </body>
