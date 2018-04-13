@@ -19,6 +19,7 @@
     color: white;
     text-align: center;
     overflow: hidden;
+    font-family: "Times New Roman", Times;
   }
 
   #spiral-container {
@@ -37,6 +38,37 @@
     height: 100%;
     cursor: pointer;
   }
+
+  .spiral-flying-label {
+    display: block;
+    position: absolute;
+    cursor: pointer;
+    /*border: 1px dotted red;*/
+    /*transform: translateY(-50%);*/
+  }
+
+  .spiral-flying-label:hover {
+    color: yellow;
+  }
+
+  .spiral-flying-label span {
+    display: block;
+    padding: 10px;
+    position: relative;
+    left: 25px;
+    top: calc( -0.5em - 10px );
+    transition: all 0.16s ease-out;
+    /*border: 1px solid yellow;*/
+  }
+
+  .spiral-flying-label span.section {
+    font-weight: bold;
+  }
+
+  .spiral-flying-label.left span {
+    left: calc( -100% - 25px );
+  }
+
 
 </style>
 </head>

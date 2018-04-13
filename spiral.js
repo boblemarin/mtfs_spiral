@@ -16,6 +16,7 @@ var Vec3 = function( x, y, z ) {
 var SpiralMenu = function( canvas, content ) {
   this.canvas = canvas;
   this.content = content;
+  this.container = canvas.parentElement;
 
   // visual elements
   var self = this;
@@ -38,13 +39,15 @@ var SpiralMenu = function( canvas, content ) {
 
 
   for ( var i = 0; i < numSpirals; ++i ) {
-    console.log("spirale 1 : " + content[i].title_fr );
     spirals.push( new Spiral( i * Math.PI, Math.PI * 0.8 ) );
     var sl = [];
     var nn = content[i].content.length;
     for ( var j = 0; j < nn; ++j ) {
-      console.log(content[i].content[j].title_fr);
+      var label = new SpiralLabel( content[i].content[j], this.container, configuration );
+      // console.log( content[i].content[j].title_fr );
+      sl.push( label );
     }
+    labels.push( sl );
   }
 
   window.addEventListener( 'resize',    onSpiralResize );
@@ -98,10 +101,16 @@ var SpiralMenu = function( canvas, content ) {
 
     // render spirals
     for ( var i = 0; i < numSpirals; ++i ) {
-      var points = spirals[i].rotate(spiralRotation, configuration, 10);
+      var nl = labels[i].length;
+      var points = spirals[i].rotate(spiralRotation, configuration, nl );
+
+      for ( var j = 0; j < nl; ++j ) {
+        labels[i][j].follow(points[j]);
+      }
+
+      // position labels
     }
     
-    // position labels
     
 
     // auto stop frame request when idle
@@ -132,7 +141,7 @@ var SpiralConfig = function( canvas, numPoints ) {
   this.nPoints = numPoints;
 
   // Label properties
-  this.inertia = 0.6;
+  this.inertia = 0.4;
   this.k = 0.2;
   this.linkMargin = 5;
   this.scaleLimit = 0.5;
@@ -208,7 +217,8 @@ Spiral.prototype.rotate = function( rotation, config, numPoints ) {
 ///////////////////   SpiralLabel     ///////////////////////
 /////////////////////////////////////////////////////////////
 
-var SpiralLabel = function( node ) {
+var SpiralLabel = function( node, container, config ) {
+  this.config = config;
   this.node = node;
   this.posX = 0;
   this.posY = 0;
@@ -218,15 +228,46 @@ var SpiralLabel = function( node ) {
   this.offsetY = 0;
   this.marginX = 25;
   this.marginY = 0;
+  this.isLeft = true;
+
+  var e = document.createElement('span');
+  e.className = "spiral-flying-label";
+  e.innerHTML = '<span class="' + node.type + '">' + node.title_fr + '</span>';
+  container.appendChild(e);
+  this.element = e;
 };
 
-SpiralLabel.prototype.setPosition = function( x, y ) {
-  this.posX = x;
-  this.posY = y;
+SpiralLabel.prototype.setPosition = function( p ) {
+  this.posX = p.x;
+  this.posY = p.y;
   this.speedX = 0;
   this.speedY = 0;
   this.offsetX = 0;
   this.offsetY = 0;
 };
 
-SpiralLabel.prototype.follow = function( x, y ) {
+SpiralLabel.prototype.follow = function( p ) {
+  // todo: import logic from FlyingLabel class
+
+  if ( p.x < this.config.centerX ) {
+    // this.offsetX = -this.marginX;
+    this.isLeft = true;
+    this.element.classList.add('left');
+  } else {
+    // this.offsetX = this.marginX;
+    this.isLeft = false;
+    this.element.classList.remove('left');
+  }
+
+  this.speedX *= this.config.inertia;
+  this.speedX += (p.x + this.offsetX - this.posX) * this.config.k;
+  this.posX += this.speedX;
+
+  this.speedY *= this.config.inertia;
+  this.speedY += (p.y + this.offsetY - this.posY) * this.config.k;
+  this.posY += this.speedY;
+
+  this.element.style.left = this.posX + 'px';
+  this.element.style.top = this.posY + 'px';
+  this.element.style.opacity = p.z * 0.8 + 0.2;
+}
