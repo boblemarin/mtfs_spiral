@@ -37,14 +37,12 @@ var SpiralMenu = function( canvas, content ) {
   var labelPool = [];
   var labels = [];
 
-
   for ( var i = 0; i < numSpirals; ++i ) {
     spirals.push( new Spiral( i * Math.PI, Math.PI * 0.8 ) );
     var sl = [];
     var nn = content[i].content.length;
     for ( var j = 0; j < nn; ++j ) {
       var label = new SpiralLabel( content[i].content[j], this.container, configuration );
-      // console.log( content[i].content[j].title_fr );
       sl.push( label );
     }
     labels.push( sl );
@@ -53,11 +51,18 @@ var SpiralMenu = function( canvas, content ) {
   window.addEventListener( 'resize',    onSpiralResize );
   this.canvas.addEventListener( 'mousedown', onSpiralDragMouseDown );
   this.canvas.addEventListener( 'mouseup',   onSpiralDragMouseUp );
+  this.container.addEventListener( 'mousedown', onContainerMouseDown );
 
   render();
 
   function onSpiralResize( event ) {
     configuration.center();
+  }
+
+  function onContainerMouseDown( event )  {
+    if ( event.target.classList.contains( 'node' ) ) {
+      console.log(event.target.innerHTML);
+    }
   }
 
   function onSpiralDragMouseDown( event ) {
@@ -220,8 +225,8 @@ Spiral.prototype.rotate = function( rotation, config, numPoints ) {
 var SpiralLabel = function( node, container, config ) {
   this.config = config;
   this.node = node;
-  this.posX = 0;
-  this.posY = 0;
+  this.posX = this.config.centerX >> 1;
+  this.posY = this.config.centerY >> 1;
   this.speedX = 0;
   this.speedY = 0;
   this.offsetX = 0;
@@ -230,9 +235,11 @@ var SpiralLabel = function( node, container, config ) {
   this.marginY = 0;
   this.isLeft = true;
 
-  var e = document.createElement('span');
-  e.className = "spiral-flying-label";
-  e.innerHTML = '<span class="' + node.type + '">' + node.title_fr + '</span>';
+  var e = document.createElement( 'span' );
+  e.className = 'spiral-flying-label';
+  e.innerHTML = '<span class="node ' + node.type + '">' + node.title_fr + '</span>';
+  e.style.left = this.posX + 'px';
+  e.style.top = this.posY + 'px';
   container.appendChild(e);
   this.element = e;
 };
@@ -270,4 +277,4 @@ SpiralLabel.prototype.follow = function( p ) {
   this.element.style.left = this.posX + 'px';
   this.element.style.top = this.posY + 'px';
   this.element.style.opacity = p.z * 0.8 + 0.2;
-}
+};
