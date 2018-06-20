@@ -63,6 +63,8 @@ var SpiralMenu = function( canvas, content ) {
     if ( event.target.classList.contains( 'node' ) ) {
       console.log(event.target.innerHTML);
     }
+    event.preventDefault();
+    event.stopImmediatePropagation();
   }
 
   function onSpiralDragMouseDown( event ) {
@@ -75,6 +77,8 @@ var SpiralMenu = function( canvas, content ) {
     if ( frameReq == 0 ) {
       frameReq = requestAnimationFrame( render );
     }
+    event.preventDefault();
+    // event.stopImmediatePropagation();
   }
 
   function onSpiralDragMouseMove( event ) {
