@@ -20,6 +20,7 @@
     text-align: center;
     overflow: hidden;
     font-family: "Times New Roman", Times;
+    font-size: 18px;
   }
 
   #spiral-container {
@@ -46,21 +47,30 @@
     cursor: pointer;
   }
 
+  #spiral-label-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
+
   .spiral-flying-label {
     display: block;
     position: absolute;
-    cursor: pointer;
+    overflow: visible;
+    /*width: 0;*/
+    height: 0;
+    /*cursor: pointer;*/
     -webkit-touch-callout: none;
       -webkit-user-select: none;
        -khtml-user-select: none;
          -moz-user-select: none;
           -ms-user-select: none;
               user-select: none;
-    /*border: 1px dotted red;*/
-    /*transform: translateY(-50%);*/
   }
 
-  .spiral-flying-label:hover {
+  .spiral-flying-label span:hover {
     color: yellow;
     /*border-bottom: 1px dotted yellow;*/
   }
@@ -69,18 +79,24 @@
     display: block;
     padding: 10px;
     position: relative;
-    left: 25px;
+    left: 35px;
     top: calc( -0.5em - 10px );
-    transition: all 0.16s ease-out;
+    transition: left 0.16s ease-out;
     /*border: 1px solid yellow;*/
+    cursor: crosshair;
   }
 
   .spiral-flying-label span.section {
     font-weight: bold;
+    font-size: 1.2em;
+  }
+
+  .spiral-flying-label span.sub {
+    margin: 0 35px;
   }
 
   .spiral-flying-label.left span {
-    left: calc( -100% - 25px );
+    left: calc( -100% - 35px );
   }
 
 
@@ -90,16 +106,15 @@
 
   <div id="spiral-container">
     <canvas id="spiral-canvas"></canvas>
+    <span id="spiral-label-container"></span>
   </div>
 
   <script type="text/javascript" src="paxton.js"></script>
   <script type="text/javascript" src="spiral.js"></script>
 
   <script type="text/javascript">
-
     var canvas = document.getElementById( 'spiral-canvas' );
     var spiralMenu = new SpiralMenu( canvas, menuContent );
-
   </script>
 </body>
 </html>
