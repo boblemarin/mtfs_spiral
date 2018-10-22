@@ -77,13 +77,17 @@
 
   .spiral-flying-label span {
     display: block;
-    padding: 10px;
+    padding: 10px 5px;
     position: relative;
-    left: 35px;
-    top: calc( -0.5em - 10px );
+    left: 15px;
+    top: calc( -1em - 6px );
     transition: left 0.16s ease-out;
     /*border: 1px solid yellow;*/
     cursor: crosshair;
+  }
+
+  .spiral-flying-label span.page {
+    font-style: italic;
   }
 
   .spiral-flying-label span.section {
@@ -91,12 +95,16 @@
     font-size: 1.2em;
   }
 
+  .spiral-flying-label span.open {
+    color: #AA0;
+  }
+
   .spiral-flying-label span.sub {
-    margin: 0 35px;
+    margin: 0 15px;
   }
 
   .spiral-flying-label.left span {
-    left: calc( -100% - 35px );
+    left: calc( -100% - 15px );
   }
 
 
@@ -113,8 +121,13 @@
   <script type="text/javascript" src="spiral.js"></script>
 
   <script type="text/javascript">
+    var spiralNavigationCallback = function( node ) {
+      console.log(node.title_fr);
+    }
+
+
     var canvas = document.getElementById( 'spiral-canvas' );
-    var spiralMenu = new SpiralMenu( canvas, menuContent );
+    var spiralMenu = new SpiralMenu( canvas, menuContent, spiralNavigationCallback );
   </script>
 </body>
 </html>

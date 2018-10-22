@@ -13,7 +13,7 @@ var Vec3 = function( x, y, z ) {
 ////////////////////   SpiralMenu     ///////////////////////
 /////////////////////////////////////////////////////////////
 
-var SpiralMenu = function( canvas, content ) {
+var SpiralMenu = function( canvas, content, callback ) {
   this.canvas = canvas;
   this.content = content;
   this.container = canvas.parentElement;
@@ -21,7 +21,7 @@ var SpiralMenu = function( canvas, content ) {
 
   // visual elements
   var self = this;
-  var configuration = new SpiralConfig( canvas, 80 );
+  var configuration = new SpiralConfig( canvas, 50 );
   var numSpirals = content.length;
   var spirals = [];
     
@@ -37,6 +37,8 @@ var SpiralMenu = function( canvas, content ) {
   // labels
   var labelPool = [];
   var labels = [];
+
+  var navigationCallback = callback;
 
 
 
@@ -123,7 +125,8 @@ var SpiralMenu = function( canvas, content ) {
           }
           break;
         case "page":
-          console.log("Sould open node : " + node.title_fr);
+          // console.log("Sould open node : " + node.title_fr);
+          callback(node);
           break;
       }
       // if ( node.type == "section" ) {
@@ -335,13 +338,13 @@ Spiral.prototype.rotate = function( rotation, config, numPoints ) {
 var SpiralLabel = function( node, container, config ) {
   this.config = config;
   this.node = node;
-  this.posX = this.config.centerX >> 1;
-  this.posY = this.config.centerY >> 1;
+  this.posX = this.config.centerX;
+  this.posY = this.config.centerY;
   this.speedX = 0;
   this.speedY = 0;
   this.offsetX = 0;
   // this.offsetY = 0;
-  this.marginX = 25;
+  this.marginX = 20;
   // this.marginY = 0;
   this.isLeft = true;
 
@@ -351,7 +354,7 @@ var SpiralLabel = function( node, container, config ) {
   e.style.top = this.posY + 'px';
 
   var ee = document.createElement( 'span' );
-  ee.className = "node " + node.type + (node.level > 1 ? " sub" : "");
+  ee.className = "node " + node.type + (node.level > 1 ? " sub" : "") + (node.open ? " open" : "");
   ee.innerHTML = node.title_fr;
   ee.__node = node;
   e.appendChild(ee);
@@ -391,9 +394,9 @@ SpiralLabel.prototype.follow = function( p ) {
 
   this.element.style.left = this.posX + 'px';
   this.element.style.top = this.posY + 'px';
-  this.element.style.opacity = p.z * 0.8 + 0.2;
+  this.element.style.opacity = p.z;// * 0.8 + 0.2;
 
-  this.config.context.moveTo(this.posX + 25 * this.node.level * (this.isLeft ? -1 : 1), this.posY);
+  this.config.context.moveTo(this.posX + 15 * this.node.level * (this.isLeft ? -1 : 1), this.posY);
   this.config.context.lineTo(p.x, p.y);
 
 };
