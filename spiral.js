@@ -286,11 +286,11 @@ var Spiral = function( offset, length ) {
 
 Spiral.prototype.rotate = function( rotation, config, numPoints ) {
   var 
-    vectors = [],
+    //vectors = [],
     p = new Vec3( 0, 0, 0 ),
-    pointsDelay = Math.floor( config.nPoints / numPoints ),
-    pointsPos = 0,
-    pointsNext = Math.floor( pointsDelay / 2 ) + 1,
+    //pointsDelay = Math.floor( config.nPoints / numPoints ),
+    //pointsPos = 0,
+    //pointsNext = Math.floor( pointsDelay / 2 ) + 1,
     yStep = config.height / ( config.nPoints - 1 ),
     angleStep = this.length / ( config.nPoints - 1 ),
     middle = -config.nPoints/2,
@@ -321,12 +321,10 @@ Spiral.prototype.rotate = function( rotation, config, numPoints ) {
     config.context.beginPath();
     config.context.moveTo( p.x , p.y );
 
-    // if ( i >= pointsNext ) {
-    //   vectors.push( p );
-    //   pointsNext += pointsDelay;
-    // }
   }
 
+  return this.computePositions( rotation, config, numPoints );
+/*
   yStep = config.height / ( numPoints + 1 );
   middle = -numPoints / 2;
   for ( var i = 0; i < numPoints; ++i ) {
@@ -340,8 +338,29 @@ Spiral.prototype.rotate = function( rotation, config, numPoints ) {
   }
   
   return vectors;
+  */
 };
 
+Spiral.prototype.computePositions = function( rotation, config, numPoints ) {
+  var 
+    vectors = [],
+    yStep = config.height / ( numPoints + 1 ),
+    middle = -numPoints / 2,
+    angle = 0,
+    p;
+
+  for ( var i = 0; i < numPoints; ++i ) {
+    angle = rotation + this.length / (numPoints + 1) * (i + 1);
+    p = new Vec3(
+      config.centerX + config.width * Math.sin( angle ),
+      config.centerY + ( i + middle + 0.5 ) * yStep,// * z,
+      Math.cos( angle ) * 0.4 + 0.6
+    );
+    vectors.push(p);
+  }
+  
+  return vectors;
+};
 
 /////////////////////////////////////////////////////////////
 ///////////////////   SpiralLabel     ///////////////////////
