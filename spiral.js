@@ -321,10 +321,22 @@ Spiral.prototype.rotate = function( rotation, config, numPoints ) {
     config.context.beginPath();
     config.context.moveTo( p.x , p.y );
 
-    if ( i >= pointsNext ) {
-      vectors.push( p );
-      pointsNext += pointsDelay;
-    }
+    // if ( i >= pointsNext ) {
+    //   vectors.push( p );
+    //   pointsNext += pointsDelay;
+    // }
+  }
+
+  yStep = config.height / ( numPoints + 1 );
+  middle = -numPoints / 2;
+  for ( var i = 0; i < numPoints; ++i ) {
+    angle = rotation + this.length / (numPoints + 1) * (i + 0.5);
+    p = new Vec3(
+      config.centerX + config.width * Math.sin( angle ),
+      config.centerY + ( i + middle ) * yStep,// * z,
+      Math.cos( angle ) * 0.4 + 0.6
+    );
+    vectors.push(p);
   }
   
   return vectors;
