@@ -1,16 +1,17 @@
 /* 
 TODO:
 
-OK - spirals should resize according to available screen space, not just center
+- being able to close spiral content completely
 - better or no rotate reaction when clicking
 - resize label font if not enough available space ? (or use responsive css)
 - add touch event capacity
-- use an easing function on text alpha to make it more clear
-- eventually use scaling on text labels
+OK - spirals should resize according to available screen space, not just center
+OK - use an easing function on text alpha to make it more clear
+OK - eventually use scaling on text labels
 OK - thinner spirals
-- being able to close spiral content completely
 OK - change mouseover cursor
 OK - add setlanguage method
+
 */
 
 
@@ -391,7 +392,7 @@ Spiral.prototype.computePositions = function( rotation, config, numPoints ) {
     angle = rotation + this.length / (numPoints + 1) * (i + 1);
     p = new Vec3(
       config.centerX + config.width * Math.sin( angle ),
-      config.centerY + ( i + middle + 0.5 ) * yStep,// * z,
+      config.centerY + ( i + middle + 0.4 ) * yStep,// * z,
       Math.cos( angle ) * 0.5 + 0.5
     );
     vectors.push(p);
