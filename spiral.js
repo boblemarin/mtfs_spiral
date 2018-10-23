@@ -1,3 +1,18 @@
+/* 
+TODO:
+
+- spirals should resize according to available screen space, not just center
+- better or no rotate reaction when clicking
+- resize label font if not enough available space ? (or use responsive css)
+- add touch event capacity
+- use an easing function on text alpha to make it more clear
+- eventually use scaling on text labels
+- thinner spirals
+- being able to close spiral content completely
+- change mouseover cursor
+*/
+
+
 /////////////////////////////////////////////////////////////
 //////////////////////    Vec3     //////////////////////////
 /////////////////////////////////////////////////////////////
