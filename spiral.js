@@ -1,15 +1,16 @@
 /* 
 TODO:
 
-- spirals should resize according to available screen space, not just center
+OK - spirals should resize according to available screen space, not just center
 - better or no rotate reaction when clicking
 - resize label font if not enough available space ? (or use responsive css)
 - add touch event capacity
 - use an easing function on text alpha to make it more clear
 - eventually use scaling on text labels
-- thinner spirals
+OK - thinner spirals
 - being able to close spiral content completely
-- change mouseover cursor
+OK - change mouseover cursor
+OK - add setlanguage method
 */
 
 
@@ -36,7 +37,7 @@ var SpiralMenu = function( canvas, content, callback ) {
 
   // visual elements
   var self = this;
-  var configuration = new SpiralConfig( canvas, 50 );
+  this.configuration = new SpiralConfig( canvas, 50 );
   var numSpirals = content.length;
   var spirals = [];
     
@@ -51,30 +52,11 @@ var SpiralMenu = function( canvas, content, callback ) {
 
   // labels
   var labelPool = [];
-  var labels = [];
+  this.labels = [];
 
-  var navigationCallback = callback;
+  // var navigationCallback = callback;
 
 
-
-  // prepare startup content
-  for ( var i = 0; i < numSpirals; ++i ) {
-    prepareContent( content[i], 0 );
-    spirals.push( new Spiral( i * Math.PI, Math.PI * 0.8 ) );
-    var sl = [];
-    var nn = content[i].content.length;
-    for ( var j = 0; j < nn; ++j ) {
-      var label = new SpiralLabel( content[i].content[j], this.labelContainer, configuration );
-      sl.push( label );
-    }
-    labels.push( sl );
-  }
-
-  window.addEventListener( 'resize',    onSpiralResize );
-  this.container.addEventListener( 'mouseup',   onContainerMouseUp );
-  this.container.addEventListener( 'mousedown', onContainerMouseDown );
-
-  render();
 
   function prepareContent( node, iterator ) {
     node.open = false;
@@ -88,37 +70,26 @@ var SpiralMenu = function( canvas, content, callback ) {
 
   function updateMenu() {
     // clean current menu
-    labels = [];
+    self.labels = [];
     self.labelContainer.innerHTML = "";
 
     // parse content and create labels
     for ( var i = 0; i < numSpirals; ++i ) {
       var sl = [];
       var nl = content[i].content.length;
-      var points = spirals[i].computePositions(spiralRotation, configuration, nl );
+      var points = spirals[i].computePositions(spiralRotation, self.configuration, nl );
 
       for ( var j = 0; j < nl; ++j ) {
         addToMenu( content[i].content[j], sl, points[j] );
       }
 
-      labels.push( sl );
-
-
-      // position labels      
-      
-      // configuration.context.beginPath();
-      // configuration.context.lineWidth = 2;
-      // configuration.context.strokeStyle = 'rgba(255, 255, 255, 0.2)';
-      // for ( var j = 0; j < nl; ++j ) {
-      //   labels[i][j].follow(points[j]);
-      // }
-      // configuration.context.stroke();
+      self.labels.push( sl );
     }
   }
 
   function addToMenu( node, array, p ) {
     // create label for node
-    var label = new SpiralLabel( node, self.labelContainer, configuration, p );
+    var label = new SpiralLabel( node, self.labelContainer, self.configuration, p );
     array.push(label);
     // resurse for opened sections
     if ( node.type == "section" && node.open == true) {
@@ -128,8 +99,8 @@ var SpiralMenu = function( canvas, content, callback ) {
     }
   }
 
-  function onSpiralResize( event ) {
-    configuration.center();
+  var onSpiralResize = function( event ) {
+    self.configuration.center();
     if ( frameReq == 0 ) {
       frameReq = requestAnimationFrame( render );
     }
@@ -140,7 +111,7 @@ var SpiralMenu = function( canvas, content, callback ) {
     event.stopImmediatePropagation();
 
     // stop automatic rotation at first click
-    gravity = 0.9;
+    gravity = 0.915;
 
     // check if clicked on node label
     if ( event.target.classList.contains( 'node' ) ) {
@@ -233,8 +204,8 @@ var SpiralMenu = function( canvas, content, callback ) {
   function render() {
     // console.log("render");
     // clear canvas
-    this.canvas.width = configuration.canvasWidth;
-    this.canvas.height = configuration.canvasHeight;
+    self.canvas.width = self.configuration.canvasWidth;
+    self.canvas.height = self.configuration.canvasHeight;
 
     // handle spiral rotation
     if ( isMouseDown ) {
@@ -249,22 +220,18 @@ var SpiralMenu = function( canvas, content, callback ) {
 
     // render spirals
     for ( var i = 0; i < numSpirals; ++i ) {
-      var nl = labels[i].length;
-      var points = spirals[i].rotate(spiralRotation, configuration, nl );
+      var nl = self.labels[i].length;
+      var points = spirals[i].rotate(spiralRotation, self.configuration, nl );
 
       // position labels
-      configuration.context.beginPath();
-      configuration.context.lineWidth = 2;
-      configuration.context.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      self.configuration.context.beginPath();
+      self.configuration.context.lineWidth = 2;
+      self.configuration.context.strokeStyle = 'rgba(255, 255, 255, 0.2)';
       for ( var j = 0; j < nl; ++j ) {
-        labels[i][j].follow(points[j]);
+        self.labels[i][j].follow(points[j]);
       }
-      configuration.context.stroke();
-
-      
+      self.configuration.context.stroke();
     }
-    
-    
 
     // auto stop frame request when idle
     if ( isMouseDown || Math.abs( spiralSpeed ) > 0.001 ) {
@@ -272,12 +239,39 @@ var SpiralMenu = function( canvas, content, callback ) {
     } else {
       frameReq = 0;
     }
+  };
+
+
+
+  // prepare startup content
+  for ( var i = 0; i < numSpirals; ++i ) {
+    prepareContent( content[i], 0 );
+    spirals.push( new Spiral( i * Math.PI, Math.PI * 0.8 ) );
+    var sl = [];
+    var nn = content[i].content.length;
+    for ( var j = 0; j < nn; ++j ) {
+      var label = new SpiralLabel( content[i].content[j], this.labelContainer, self.configuration );
+      sl.push( label );
+    }
+    self.labels.push( sl );
   }
+
+  window.addEventListener( 'resize',    onSpiralResize );
+  this.container.addEventListener( 'mouseup',   onContainerMouseUp );
+  this.container.addEventListener( 'mousedown', onContainerMouseDown );
+
+  render();
 };
 
 SpiralMenu.prototype.setLanguage = function( lang ) {
+  if (this.configuration.language == lang) return;
   this.configuration.language = lang;
-}
+  for ( let spiral of this.labels ) {
+    for ( let label of spiral ) {
+    label.updateLabel();
+    }
+  }
+};
 
 /////////////////////////////////////////////////////////////
 ////////////////////  SpiralConfig    ///////////////////////
@@ -287,17 +281,21 @@ var SpiralConfig = function( canvas, numPoints ) {
   // Spiral properties
   this.canvas = canvas;
   this.context = canvas.getContext( '2d' );
+  this.nPoints = numPoints;
+  /*
   this.canvasWidth = this.canvas.clientWidth;
   this.canvasHeight = this.canvas.clientHeight;
   this.centerX = this.canvasWidth / 2;
   this.centerY = this.canvasHeight / 2;
   this.width = Math.min( this.centerX - 20, 200 );
   this.height = Math.min( this.canvasHeight - 40, 600 );
-  this.nPoints = numPoints;
+*/
+
+  this.center();
 
   // Label properties
-  this.inertia = 0.5;
-  this.k = 0.2;
+  this.inertia = 0.7;
+  this.k = 0.1;
   this.linkMargin = 5;
   this.scaleLimit = 0.5;
   this.language = "en";
@@ -310,6 +308,8 @@ SpiralConfig.prototype.center = function() {
   this.centerY = this.canvasHeight / 2;
   this.canvas.width = this.canvasWidth;
   this.canvas.height = this.canvasHeight;
+  this.width = this.canvasWidth / 6;//Math.min( this.centerX - 20, 200 );
+  this.height = this.canvasHeight - 140; //Math.min( this.canvasHeight - 40, 600 );
 };
 
 
@@ -352,7 +352,7 @@ Spiral.prototype.rotate = function( rotation, config, numPoints ) {
       config.centerY + ( i + middle ) * yStep,// * z,
       z
     );
-    config.context.lineWidth = z*8+2;
+    config.context.lineWidth = z*4+1;
     config.context.strokeStyle = 'rgba(255,255,255,' + z + ')';
     config.context.lineTo( p.x , p.y );
     config.context.stroke();
@@ -430,6 +430,10 @@ var SpiralLabel = function( node, container, config, p ) {
   e.appendChild(ee);
   container.appendChild(e);
   this.element = e;
+};
+
+SpiralLabel.prototype.updateLabel = function() {
+  this.element.firstElementChild.innerHTML = this.node[ "title_" + this.config.language ];
 };
 
 SpiralLabel.prototype.setPosition = function( p ) {
