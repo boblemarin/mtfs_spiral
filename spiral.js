@@ -275,7 +275,9 @@ var SpiralMenu = function( canvas, content, callback ) {
   }
 };
 
-
+SpiralMenu.prototype.setLanguage = function( lang ) {
+  this.configuration.language = lang;
+}
 
 /////////////////////////////////////////////////////////////
 ////////////////////  SpiralConfig    ///////////////////////
