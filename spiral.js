@@ -392,7 +392,7 @@ Spiral.prototype.computePositions = function( rotation, config, numPoints ) {
     p = new Vec3(
       config.centerX + config.width * Math.sin( angle ),
       config.centerY + ( i + middle + 0.5 ) * yStep,// * z,
-      Math.cos( angle ) * 0.4 + 0.6
+      Math.cos( angle ) * 0.5 + 0.5
     );
     vectors.push(p);
   }
@@ -472,9 +472,14 @@ SpiralLabel.prototype.follow = function( p ) {
 
   this.element.style.left = this.posX + 'px';
   this.element.style.top = this.posY + 'px';
-  this.element.style.opacity = p.z;// * 0.8 + 0.2;
+  let easedZ = easeInOutQuad(p.z);
+  this.element.style.opacity = easedZ * 0.85 + 0.15;// * 0.8 + 0.2;
+  easedZ = p.z * 0.3 + 0.7;
+  //this.element.style.transform = "scale3d(" + easedZ + ", " + easedZ + ", 1)";
 
   this.config.context.moveTo(this.posX + 15 * this.node.level * (this.isLeft ? -1 : 1), this.posY);
-  this.config.context.lineTo(p.x, p.y);
+  this.config.context.lineTo(p.x, p.y); // + (this.isLeft ? -10 : 10)
 
 };
+
+function easeInOutQuad(t) { return t<.5 ? 2*t*t : -1+(4-2*t)*t }
