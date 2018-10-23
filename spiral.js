@@ -79,21 +79,36 @@ var SpiralMenu = function( canvas, content, callback ) {
     // parse content and create labels
     for ( var i = 0; i < numSpirals; ++i ) {
       var sl = [];
-      for ( let node of content[i].content ) {
-        addToMenu( node, sl );
+      var nl = content[i].content.length;
+      var points = spirals[i].computePositions(spiralRotation, configuration, nl );
+
+      for ( var j = 0; j < nl; ++j ) {
+        addToMenu( content[i].content[j], sl, points[j] );
       }
+
       labels.push( sl );
+
+
+      // position labels      
+      
+      // configuration.context.beginPath();
+      // configuration.context.lineWidth = 2;
+      // configuration.context.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      // for ( var j = 0; j < nl; ++j ) {
+      //   labels[i][j].follow(points[j]);
+      // }
+      // configuration.context.stroke();
     }
   }
 
-  function addToMenu( node, array ) {
+  function addToMenu( node, array, p ) {
     // create label for node
-    var label = new SpiralLabel( node, self.labelContainer, configuration );
+    var label = new SpiralLabel( node, self.labelContainer, configuration, p );
     array.push(label);
     // resurse for opened sections
     if ( node.type == "section" && node.open == true) {
       for ( let child of node.content ) {
-        addToMenu( child, array );
+        addToMenu( child, array, p );
       }
     }
   }
@@ -109,6 +124,10 @@ var SpiralMenu = function( canvas, content, callback ) {
     event.preventDefault();
     event.stopImmediatePropagation();
 
+    // stop automatic rotation at first click
+    gravity = 0.9;
+
+    // check if clicked on node label
     if ( event.target.classList.contains( 'node' ) ) {
       let node = event.target.__node;
       switch ( node.type ) {
@@ -125,7 +144,7 @@ var SpiralMenu = function( canvas, content, callback ) {
           }
           break;
         case "page":
-          // console.log("Sould open node : " + node.title_fr);
+          // console.log("Sould open node : " + node[ "title_" + this.config.language ]);
           callback(node);
           break;
       }
@@ -136,8 +155,8 @@ var SpiralMenu = function( canvas, content, callback ) {
       return;
     }
 
+    // else start spiral drag operation
     isMouseDown = true; 
-    gravity = 0.9;
     pMouseX = event.pageX; 
     mouseX = pMouseX;
     self.canvas.style.cursor = 'ew-resize';
@@ -149,9 +168,9 @@ var SpiralMenu = function( canvas, content, callback ) {
 
   function openBranchForNode( target ) {
     for ( let spiral of content) {
-      //console.log("check : " + spiral.title_fr);
+      //console.log("check : " + spiral[ "title_" + this.config.language ]);
       for ( let node of spiral.content ) {
-        //console.log("check : " + node.title_fr);
+        //console.log("check : " + node[ "title_" + this.config.language ]);
         if ( node.type == 'section' ) {
           node.open = checkSectionForNode( node, target );
           //console.log("NODE open("+node.open+") : "+ node.title);
@@ -218,6 +237,7 @@ var SpiralMenu = function( canvas, content, callback ) {
       var nl = labels[i].length;
       var points = spirals[i].rotate(spiralRotation, configuration, nl );
 
+      // position labels
       configuration.context.beginPath();
       configuration.context.lineWidth = 2;
       configuration.context.strokeStyle = 'rgba(255, 255, 255, 0.2)';
@@ -226,7 +246,7 @@ var SpiralMenu = function( canvas, content, callback ) {
       }
       configuration.context.stroke();
 
-      // position labels
+      
     }
     
     
@@ -263,6 +283,7 @@ var SpiralConfig = function( canvas, numPoints ) {
   this.k = 0.2;
   this.linkMargin = 5;
   this.scaleLimit = 0.5;
+  this.language = "en";
 };
 
 SpiralConfig.prototype.center = function() {
@@ -323,7 +344,7 @@ Spiral.prototype.rotate = function( rotation, config, numPoints ) {
 
   }
 
-  return this.computePositions( rotation, config, numPoints );
+  return this.computePositions( rotation - this.angleOffset, config, numPoints );
 /*
   yStep = config.height / ( numPoints + 1 );
   middle = -numPoints / 2;
@@ -348,7 +369,7 @@ Spiral.prototype.computePositions = function( rotation, config, numPoints ) {
     middle = -numPoints / 2,
     angle = 0,
     p;
-
+  rotation += this.angleOffset
   for ( var i = 0; i < numPoints; ++i ) {
     angle = rotation + this.length / (numPoints + 1) * (i + 1);
     p = new Vec3(
@@ -366,27 +387,28 @@ Spiral.prototype.computePositions = function( rotation, config, numPoints ) {
 ///////////////////   SpiralLabel     ///////////////////////
 /////////////////////////////////////////////////////////////
 
-var SpiralLabel = function( node, container, config ) {
+var SpiralLabel = function( node, container, config, p ) {
   this.config = config;
   this.node = node;
-  this.posX = this.config.centerX;
-  this.posY = this.config.centerY;
+  this.posX = p ? p.x : this.config.centerX;
+  this.posY = p ? p.y : this.config.centerY;
   this.speedX = 0;
   this.speedY = 0;
-  this.offsetX = 0;
+  this.isLeft = this.posX < this.config.centerX;
+  this.offsetX = this.marginX * this.node.level * (this.isLeft ? -1 : 1);
   // this.offsetY = 0;
   this.marginX = 20;
   // this.marginY = 0;
-  this.isLeft = true;
 
   var e = document.createElement( 'span' );
   e.className = 'spiral-flying-label';
   e.style.left = this.posX + 'px';
   e.style.top = this.posY + 'px';
+  if ( this.isLeft ) e.classList.add('left');
 
   var ee = document.createElement( 'span' );
   ee.className = "node " + node.type + (node.level > 1 ? " sub" : "") + (node.open ? " open" : "");
-  ee.innerHTML = node.title_fr;
+  ee.innerHTML = node[ "title_" + this.config.language ];
   ee.__node = node;
   e.appendChild(ee);
   container.appendChild(e);
@@ -400,6 +422,10 @@ SpiralLabel.prototype.setPosition = function( p ) {
   this.speedY = 0;
   this.offsetX = 0;
   // this.offsetY = 0;
+
+  // this.element.style.left = this.posX + 'px';
+  // this.element.style.top = this.posY + 'px';
+  // this.element.style.opacity = p.z;// * 0.8 + 0.2;
 };
 
 SpiralLabel.prototype.follow = function( p ) {
