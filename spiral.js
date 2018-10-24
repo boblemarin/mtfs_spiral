@@ -29,17 +29,27 @@ var Vec3 = function( x, y, z ) {
 /////////////////////////////////////////////////////////////
 ////////////////////   SpiralMenu     ///////////////////////
 /////////////////////////////////////////////////////////////
-
-var SpiralMenu = function( canvas, content, callback ) {
-  this.canvas = canvas;
-  this.content = content;
-  this.container = canvas.parentElement;
-  this.labelContainer = document.getElementById("spiral-label-container");
+/*
+  settings = {
+    "container": div element containing the canvas and the labels container
+    "content": json object containing menu structure
+    "callback": function called when clicking on a page node
+    "language": locale string
+  }
+*/
+var SpiralMenu = function( settings ) {
+// canvas, content, callback
+  
+  this.content = settings.content;
+  this.container = settings.container;
+  this.canvas = this.container.querySelector( "#spiral-canvas" );
+  this.labelContainer = this.container.querySelector( "#spiral-label-container" );
 
   // visual elements
   var self = this;
-  this.configuration = new SpiralConfig( canvas, 50 );
-  var numSpirals = content.length;
+  this.configuration = new SpiralConfig( this.canvas, 50 );
+  this.configuration.language = settings.language;
+  var numSpirals = this.content.length;
   var spirals = [];
     
   // Spiral drag properties
@@ -55,7 +65,7 @@ var SpiralMenu = function( canvas, content, callback ) {
   var labelPool = [];
   this.labels = [];
 
-  // var navigationCallback = callback;
+  var navigationCallback = settings.callback;
 
 
 
@@ -77,11 +87,11 @@ var SpiralMenu = function( canvas, content, callback ) {
     // parse content and create labels
     for ( var i = 0; i < numSpirals; ++i ) {
       var sl = [];
-      var nl = content[i].content.length;
+      var nl = self.content[i].content.length;
       var points = spirals[i].computePositions(spiralRotation, self.configuration, nl );
 
       for ( var j = 0; j < nl; ++j ) {
-        addToMenu( content[i].content[j], sl, points[j] );
+        addToMenu( self.content[i].content[j], sl, points[j] );
       }
 
       self.labels.push( sl );
@@ -132,7 +142,7 @@ var SpiralMenu = function( canvas, content, callback ) {
           break;
         case "page":
           // console.log("Sould open node : " + node[ "title_" + this.config.language ]);
-          callback(node);
+          navigationCallback(node);
           break;
       }
       // if ( node.type == "section" ) {
@@ -154,7 +164,7 @@ var SpiralMenu = function( canvas, content, callback ) {
   }
 
   function openBranchForNode( target ) {
-    for ( let spiral of content) {
+    for ( let spiral of self.content) {
       //console.log("check : " + spiral[ "title_" + this.config.language ]);
       for ( let node of spiral.content ) {
         //console.log("check : " + node[ "title_" + this.config.language ]);
@@ -246,12 +256,12 @@ var SpiralMenu = function( canvas, content, callback ) {
 
   // prepare startup content
   for ( var i = 0; i < numSpirals; ++i ) {
-    prepareContent( content[i], 0 );
+    prepareContent( this.content[i], 0 );
     spirals.push( new Spiral( i * Math.PI, Math.PI * 0.8 ) );
     var sl = [];
-    var nn = content[i].content.length;
+    var nn = this.content[i].content.length;
     for ( var j = 0; j < nn; ++j ) {
-      var label = new SpiralLabel( content[i].content[j], this.labelContainer, self.configuration );
+      var label = new SpiralLabel( this.content[i].content[j], this.labelContainer, self.configuration );
       sl.push( label );
     }
     self.labels.push( sl );

@@ -125,14 +125,18 @@
 
   <script type="text/javascript">
     var spiralNavigationCallback = function( node ) {
-      console.log(node.title_fr);
+      console.log(node);
     }
 
+    var container = document.getElementById( 'spiral-container' );
 
-    var canvas = document.getElementById( 'spiral-canvas' );
-    var spiralMenu = new SpiralMenu( canvas, menuContent, spiralNavigationCallback );
+    var spiralMenu = new SpiralMenu({
+      container: container,
+      content: menuContent,
+      language: "fr",
+      callback: spiralNavigationCallback 
+    });
 
-    spiralMenu.setLanguage("fr");
   </script>
 </body>
 </html>
