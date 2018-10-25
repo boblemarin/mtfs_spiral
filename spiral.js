@@ -306,15 +306,6 @@ var SpiralConfig = function( canvas, numPoints ) {
   this.canvas = canvas;
   this.context = canvas.getContext( '2d' );
   this.nPoints = numPoints;
-  /*
-  this.canvasWidth = this.canvas.clientWidth;
-  this.canvasHeight = this.canvas.clientHeight;
-  this.centerX = this.canvasWidth / 2;
-  this.centerY = this.canvasHeight / 2;
-  this.width = Math.min( this.centerX - 20, 200 );
-  this.height = Math.min( this.canvasHeight - 40, 600 );
-*/
-
   this.center();
 
   // Label properties
@@ -332,7 +323,7 @@ SpiralConfig.prototype.center = function() {
   this.centerY = this.canvasHeight / 2;
   this.canvas.width = this.canvasWidth;
   this.canvas.height = this.canvasHeight;
-  this.width = this.canvasWidth / 6;//Math.min( this.centerX - 20, 200 );
+  this.width = (this.canvasHeight - 140) / 4;//Math.min( this.centerX - 20, 200 );
   this.height = this.canvasHeight - 140; //Math.min( this.canvasHeight - 40, 600 );
 };
 
