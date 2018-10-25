@@ -38,7 +38,6 @@ var Vec3 = function( x, y, z ) {
   }
 */
 var SpiralMenu = function( settings ) {
-// canvas, content, callback
   
   this.content = settings.content;
   this.container = settings.container;
@@ -189,15 +188,15 @@ var SpiralMenu = function( settings ) {
     return open;
   }
 
-
-    // for ( var i = 0; i < numSpirals; ++i ) {
-    //   var sl = [];
-    //   for ( let node of content[i].content ) {
-    //     addToMenu( node, sl );
-    //   }
-    //   labels.push( sl );
-    // }
-  //}
+  function onContainerMouseWheel( event ) {
+    // stop automatic rotation at first interaction
+    gravity = 0.915;
+    // speed up spiral according to wheel direction
+    spiralSpeed = 0.1 * (event.deltaY > 0 ? 1 : -1);
+    if ( frameReq == 0 ) {
+      frameReq = requestAnimationFrame( render );
+    }
+  }
 
   function onContainerMouseMove( event ) {
     mouseX = event.pageX;
@@ -209,7 +208,6 @@ var SpiralMenu = function( settings ) {
       self.canvas.style.cursor = 'pointer';
       self.container.removeEventListener( 'mousemove', onContainerMouseMove );
     }
-    
   }
 
   function render() {
@@ -252,6 +250,19 @@ var SpiralMenu = function( settings ) {
     }
   };
 
+  this.clear = function() {
+    window.removeEventListener( 'resize', onSpiralResize );
+    self.container.removeEventListener( 'mouseup', onContainerMouseUp );
+    self.container.removeEventListener( 'mousedown', onContainerMouseDown );
+    self.container.removeEventListener( 'mousewheel', onContainerMouseWheel );
+    isMouseDown = false;
+    spiralSpeed = 0;
+    self.configuration = null;
+    if (frameReq) {
+      cancelAnimationFrame( frameReq );
+      frameReq = 0;
+    }
+  }
 
 
   // prepare startup content
@@ -267,9 +278,10 @@ var SpiralMenu = function( settings ) {
     self.labels.push( sl );
   }
 
-  window.addEventListener( 'resize',    onSpiralResize );
-  this.container.addEventListener( 'mouseup',   onContainerMouseUp );
+  window.addEventListener( 'resize', onSpiralResize );
+  this.container.addEventListener( 'mouseup', onContainerMouseUp );
   this.container.addEventListener( 'mousedown', onContainerMouseDown );
+  this.container.addEventListener( 'mousewheel', onContainerMouseWheel );
 
   render();
 };
@@ -283,6 +295,7 @@ SpiralMenu.prototype.setLanguage = function( lang ) {
     }
   }
 };
+
 
 /////////////////////////////////////////////////////////////
 ////////////////////  SpiralConfig    ///////////////////////
