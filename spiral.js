@@ -47,7 +47,7 @@ var SpiralMenu = function( settings ) {
   // visual elements
   var self = this;
   this.configuration = new SpiralConfig( this.canvas, 50 );
-  this.configuration.language = settings.language;
+  this.configuration.language = settings.language || "en";
   var numSpirals = this.content.length;
   var spirals = [];
     
