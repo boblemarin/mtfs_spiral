@@ -130,6 +130,7 @@
       var spiralMenu = new SpiralMenu({
         container: document.querySelector( '#spiral-container' ),
         content: menuContent,
+        selectedNodeId: "test",
         language: 'fr',
         callback: ( node ) => {
           console.log( node );
@@ -139,6 +140,8 @@
       // change language
       // spiralMenu.setLanguage( 'en' );
 
+      // select node
+      //spiralMenu.selectNode("nodeId");
 
       // stop animation and remove all listeners
       // spiralMenu.clear();
