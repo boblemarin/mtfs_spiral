@@ -34,6 +34,7 @@ chose.innerText += out;
 
 function parse(node, spacer) {
   add(spacer + "{");
+  add(spacer + '  "id":       "' + guid() + '",');
   add(spacer + '  "type":     "' + node.tagName + '",');
   add(spacer + '  "title_fr": "' + node.getAttribute("title_fr") + '",');
   add(spacer + '  "title_en": "' + node.getAttribute("title_en") + '",');
@@ -69,6 +70,14 @@ function parseM(node, spacer) {
 function add(txt) {
   out += txt + "\n";
 }
+
+function guid() {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+  };
+
 
   </script>
 </body>
