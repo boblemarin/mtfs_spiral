@@ -86,13 +86,17 @@ var SpiralMenu = function( settings ) {
     // parse content and create labels
     for ( var i = 0; i < numSpirals; ++i ) {
       var sl = [];
+      var points = spirals[i].computePositions(spiralRotation, self.configuration, 1 );
+      addToMenu( self.content[i], sl, points[i] );
+/*
+      var sl = [];
       var nl = self.content[i].content.length;
       var points = spirals[i].computePositions(spiralRotation, self.configuration, nl );
 
       for ( var j = 0; j < nl; ++j ) {
         addToMenu( self.content[i].content[j], sl, points[j] );
       }
-
+*/
       self.labels.push( sl );
     }
   }
@@ -267,14 +271,18 @@ var SpiralMenu = function( settings ) {
 
   // prepare startup content
   for ( var i = 0; i < numSpirals; ++i ) {
-    prepareContent( this.content[i], 0 );
+    prepareContent( this.content[i], 1 );
     spirals.push( new Spiral( i * Math.PI, Math.PI * 0.8 ) );
     var sl = [];
+    var label = new SpiralLabel( this.content[i], this.labelContainer, self.configuration );
+    sl.push( label );
+    /*
     var nn = this.content[i].content.length;
     for ( var j = 0; j < nn; ++j ) {
       var label = new SpiralLabel( this.content[i].content[j], this.labelContainer, self.configuration );
       sl.push( label );
     }
+    */
     self.labels.push( sl );
   }
 
