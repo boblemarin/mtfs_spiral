@@ -42,6 +42,7 @@ var SpiralMenu = function( settings ) {
   var spiralRotation = 0;
   var spiralSpeed = 0.012;
   var frameReq = 0;
+  var lastOpen = null;
 
   // labels
   var labelPool = [];
@@ -51,29 +52,29 @@ var SpiralMenu = function( settings ) {
 
 
 
-  function updateMenu() {
-    // clean current menu
-    //self.labels = [];
-    //self.labelContainer.innerHTML = "";
+//   function updateMenu() {
+//     // clean current menu
+//     //self.labels = [];
+//     //self.labelContainer.innerHTML = "";
 
-    // parse content and create labels
-    for ( var i = 0; i < numSpirals; ++i ) {
-      var sl = [];
+//     // parse content and create labels
+//     for ( var i = 0; i < numSpirals; ++i ) {
+//       var sl = [];
 
-      //var points = spirals[i].computePositions(spiralRotation, self.configuration, 1 );
-      //addToMenu( self.content[i], sl, points[i] );
-/*
-      var sl = [];
-      var nl = self.content[i].content.length;
-      var points = spirals[i].computePositions(spiralRotation, self.configuration, nl );
+//       //var points = spirals[i].computePositions(spiralRotation, self.configuration, 1 );
+//       //addToMenu( self.content[i], sl, points[i] );
+// /*
+//       var sl = [];
+//       var nl = self.content[i].content.length;
+//       var points = spirals[i].computePositions(spiralRotation, self.configuration, nl );
 
-      for ( var j = 0; j < nl; ++j ) {
-        addToMenu( self.content[i].content[j], sl, points[j] );
-      }
-*/
-      self.labels.push( sl );
-    }
-  }
+//       for ( var j = 0; j < nl; ++j ) {
+//         addToMenu( self.content[i].content[j], sl, points[j] );
+//       }
+// */
+//       self.labels.push( sl );
+//     }
+//   }
 
   function addToMenu( node, array, p ) {
     // create label for node
@@ -160,12 +161,20 @@ var SpiralMenu = function( settings ) {
     label.node.open = true;
     let index = self.labels[label.node.spiral].indexOf(label);
     for ( let node of label.node.content ) {
+      // TODO: position element at parent position
       self.labelContainer.appendChild(node.label.element);
       self.labels[node.spiral].splice(index + 1, 0, node.label);
     }
 
     // close other spiral
     closeLabel(self.content[(label.node.spiral+1) % 2].label);
+
+    // close last ?
+    if (lastOpen && lastOpen.node.level > 1) {
+      closeLabel(lastOpen);
+    }
+
+    lastOpen = label;
   }
 
   // function openBranchForNode( target ) {
@@ -308,7 +317,7 @@ var SpiralMenu = function( settings ) {
   this.container.addEventListener( 'mousedown', onContainerMouseDown );
   this.container.addEventListener( 'mousewheel', onContainerMouseWheel );
 
-  updateMenu();
+  // updateMenu();
   render();
 };
 
