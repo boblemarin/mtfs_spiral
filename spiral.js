@@ -250,6 +250,7 @@ var SpiralMenu = function( settings ) {
   }
 
   function prepareContent( node, iterator, spiralID ) {
+    node.id = node.id || node.page_id;
     node.open = node.open || false;
     node.level = iterator;
     node.spiral = spiralID;
