@@ -18,6 +18,7 @@ var Vec3 = function( x, y, z ) {
     "content": json object containing menu structure
     "callback": function called when clicking on a page node
     "language": locale string
+    "selectedNodeId": ID for pre-selected node upon startup
   }
 */
 var SpiralMenu = function( settings ) {
@@ -50,18 +51,6 @@ var SpiralMenu = function( settings ) {
 
   var navigationCallback = settings.callback;
 
-
-  // function addToMenu( node, array, p ) {
-  //   // create label for node
-  //   var label = new SpiralLabel( node, self.labelContainer, self.configuration, p );
-  //   array.push(label);
-  //   // resurse for opened sections
-  //   if ( node.type == "section" && node.open == true) {
-  //     for ( let child of node.content ) {
-  //       addToMenu( child, array, p );
-  //     }
-  //   }
-  // }
 
   var onSpiralResize = function( event ) {
     self.configuration.center();
@@ -215,6 +204,9 @@ var SpiralMenu = function( settings ) {
   };
 
   this.clear = function() {
+    // clear canvas
+    self.canvas.width = self.configuration.canvasWidth;
+    self.canvas.height = self.configuration.canvasHeight;
     // remove listeners
     window.removeEventListener( 'resize', onSpiralResize );
     self.container.removeEventListener( 'mouseup', onContainerMouseUp );
@@ -243,7 +235,6 @@ var SpiralMenu = function( settings ) {
   }
 
   function clean(node) {
-    console.log("cleaning " + node.title_fr);
     if (node.content) {
       for (let child of node.content) {
         clean(child);
