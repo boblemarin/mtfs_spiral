@@ -51,42 +51,17 @@ var SpiralMenu = function( settings ) {
   var navigationCallback = settings.callback;
 
 
-
-//   function updateMenu() {
-//     // clean current menu
-//     //self.labels = [];
-//     //self.labelContainer.innerHTML = "";
-
-//     // parse content and create labels
-//     for ( var i = 0; i < numSpirals; ++i ) {
-//       var sl = [];
-
-//       //var points = spirals[i].computePositions(spiralRotation, self.configuration, 1 );
-//       //addToMenu( self.content[i], sl, points[i] );
-// /*
-//       var sl = [];
-//       var nl = self.content[i].content.length;
-//       var points = spirals[i].computePositions(spiralRotation, self.configuration, nl );
-
-//       for ( var j = 0; j < nl; ++j ) {
-//         addToMenu( self.content[i].content[j], sl, points[j] );
-//       }
-// */
-//       self.labels.push( sl );
-//     }
-//   }
-
-  function addToMenu( node, array, p ) {
-    // create label for node
-    var label = new SpiralLabel( node, self.labelContainer, self.configuration, p );
-    array.push(label);
-    // resurse for opened sections
-    if ( node.type == "section" && node.open == true) {
-      for ( let child of node.content ) {
-        addToMenu( child, array, p );
-      }
-    }
-  }
+  // function addToMenu( node, array, p ) {
+  //   // create label for node
+  //   var label = new SpiralLabel( node, self.labelContainer, self.configuration, p );
+  //   array.push(label);
+  //   // resurse for opened sections
+  //   if ( node.type == "section" && node.open == true) {
+  //     for ( let child of node.content ) {
+  //       addToMenu( child, array, p );
+  //     }
+  //   }
+  // }
 
   var onSpiralResize = function( event ) {
     self.configuration.center();
@@ -177,32 +152,6 @@ var SpiralMenu = function( settings ) {
     lastOpen = label;
   }
 
-  // function openBranchForNode( target ) {
-  //   for ( let spiral of self.content) {
-  //     //console.log("check : " + spiral[ "title_" + this.config.language ]);
-  //     for ( let node of spiral.content ) {
-  //       //console.log("check : " + node[ "title_" + this.config.language ]);
-  //       if ( node.type == 'section' ) {
-  //         node.open = checkSectionForNode( node, target );
-  //         //console.log("NODE open("+node.open+") : "+ node.title);
-  //       }
-  //     }
-  //   }
-  // }
-
-  // function checkSectionForNode( node, target ) {
-  //   // node is target, should not be opened
-  //   if ( node == target ) return true;
-
-  //   let open = false;
-  //   for ( let child in node.content ) {
-  //     if ( child == target ) {
-  //       open = true;
-  //     }
-  //   }
-  //   return open;
-  // }
-
   function onContainerMouseWheel( event ) {
     // stop automatic rotation at first interaction
     gravity = 0.915;
@@ -281,13 +230,29 @@ var SpiralMenu = function( settings ) {
       frameReq = 0;
     }
 
+    // remove circular references
+    for (let spiral of self.content) {
+      clean(spiral);
+    }
+
     // clear elements
-    self.labels = [];
+    self.spirals = null;
+    self.labels = null;
     self.labelContainer.innerHTML = "";
-    this.content = null;
+    self.content = null;
   }
 
-
+  function clean(node) {
+    console.log("cleaning " + node.title_fr);
+    if (node.content) {
+      for (let child of node.content) {
+        clean(child);
+      }
+    }
+    
+    node.label.clear();
+    delete node.label;
+  }
 
   function prepareContent( node, iterator, spiralID ) {
     node.open = false;
@@ -481,6 +446,14 @@ var SpiralLabel = function( node, container, config, p ) {
   //container.appendChild(e);
   this.element = e;
 };
+
+SpiralLabel.prototype.clear = function() {
+  this.remove();
+  delete this.element.childNodes[0].__slobject;
+  this.config = null;
+  this.node = null;
+  this.element = null;
+}
 
 SpiralLabel.prototype.remove = function() {
   if ( this.element.parentNode ) {

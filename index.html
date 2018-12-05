@@ -130,7 +130,7 @@
       var spiralMenu = new SpiralMenu({
         container: document.querySelector( '#spiral-container' ),
         content: menuContent,
-        selectedNodeId: "test",
+        selectedNodeId: "dbdfd3d5-badb-44ac-9a4d-023f620d44b1",
         language: 'fr',
         callback: ( node ) => {
           console.log( node );
@@ -145,7 +145,10 @@
 
       // stop animation and remove all listeners
       // spiralMenu.clear();
-
+      function clear() {
+        spiralMenu.clear();
+        spiralMenu = null;
+      }
     </script>
 
   </body>
