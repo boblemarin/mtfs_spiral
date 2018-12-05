@@ -84,7 +84,7 @@ var SpiralMenu = function( settings ) {
           break;
         case "page":
           // console.log("Sould open node : " + node[ "title_" + this.config.language ]);
-          navigationCallback(node);
+          navigationCallback(label.node);
           break;
       }
       // if ( node.type == "section" ) {
@@ -246,7 +246,7 @@ var SpiralMenu = function( settings ) {
   }
 
   function prepareContent( node, iterator, spiralID ) {
-    node.open = false;
+    node.open = node.open || false;
     node.level = iterator;
     node.spiral = spiralID;
     node.label = new SpiralLabel( node, this.labelContainer, self.configuration );
@@ -258,6 +258,31 @@ var SpiralMenu = function( settings ) {
     }
   }
 
+  function findIdInNode(id, node, path) {
+    if (node.id == id) return true;
+
+    if (node.content) {
+      for( let child of node.content ) {
+        if (child.id == id) {
+          path.push(node);
+          return true;
+        }
+        if (findIdInNode(id, child, path)) {
+          path.unshift(node);
+        }
+      }
+    }
+
+    return false;
+  }
+
+  // find auto-selected node
+  var pathNodes = [];
+  if (settings.selectedNodeId) {
+    for (let node of self.content) {
+      findIdInNode(settings.selectedNodeId, node, pathNodes);
+    }
+  }
 
   // prepare startup content
   for ( var i = 0; i < numSpirals; ++i ) {
@@ -266,6 +291,10 @@ var SpiralMenu = function( settings ) {
     let rootLabel = this.content[i].label;
     self.labelContainer.appendChild(rootLabel.element);
     self.labels.push( [rootLabel] );
+  }
+
+  for (let node of pathNodes) {
+    openLabel(node.label);
   }
 
   window.addEventListener( 'resize', onSpiralResize );
