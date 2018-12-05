@@ -254,7 +254,7 @@ var SpiralMenu = function( settings ) {
     node.open = node.open || false;
     node.level = iterator;
     node.spiral = spiralID;
-    node.label = new SpiralLabel( node, this.labelContainer, self.configuration );
+    node.label = new SpiralLabel( node, self.labelContainer, self.configuration );
 
     if ( node.hasOwnProperty( 'content' ) ) {
       for ( let child of node.content ) {
@@ -291,9 +291,9 @@ var SpiralMenu = function( settings ) {
 
   // prepare startup content
   for ( var i = 0; i < numSpirals; ++i ) {
-    prepareContent( this.content[i], 1, i );
+    prepareContent( self.content[i], 1, i );
     spirals.push( new Spiral( i * Math.PI, Math.PI * 0.8 ) );
-    let rootLabel = this.content[i].label;
+    let rootLabel = self.content[i].label;
     self.labelContainer.appendChild(rootLabel.element);
     self.labels.push( [rootLabel] );
   }
@@ -303,9 +303,9 @@ var SpiralMenu = function( settings ) {
   }
 
   window.addEventListener( 'resize', onSpiralResize );
-  this.container.addEventListener( 'mouseup', onContainerMouseUp );
-  this.container.addEventListener( 'mousedown', onContainerMouseDown );
-  this.container.addEventListener( 'mousewheel', onContainerMouseWheel );
+  self.container.addEventListener( 'mouseup', onContainerMouseUp );
+  self.container.addEventListener( 'mousedown', onContainerMouseDown );
+  self.container.addEventListener( 'mousewheel', onContainerMouseWheel );
 
   // updateMenu();
   render();
