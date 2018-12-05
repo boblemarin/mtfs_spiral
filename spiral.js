@@ -105,6 +105,7 @@ var SpiralMenu = function( settings ) {
     }
   }
 
+
   function closeLabel( label ) {
     if ( label.node.open == false ) return;
 
@@ -117,6 +118,7 @@ var SpiralMenu = function( settings ) {
         self.labels[node.spiral].splice(index, 1);
       }
     }
+    lastOpen = null;
   }
 
   function openLabel( label) {
@@ -124,10 +126,12 @@ var SpiralMenu = function( settings ) {
 
     label.node.open = true;
     let index = self.labels[label.node.spiral].indexOf(label);
+    //let nodes = [];
     for ( let node of label.node.content ) {
       // TODO: position element at parent position
       self.labelContainer.appendChild(node.label.element);
       self.labels[node.spiral].splice(index + 1, 0, node.label);
+      ++index;
     }
 
     // close other spiral
@@ -343,7 +347,7 @@ SpiralConfig.prototype.center = function() {
   this.centerY = this.canvasHeight / 2;
   this.canvas.width = this.canvasWidth;
   this.canvas.height = this.canvasHeight;
-  this.width = (this.canvasHeight - 140) / 4;//Math.min( this.centerX - 20, 200 );
+  this.width = (this.canvasHeight - 140) / 5;//Math.min( this.centerX - 20, 200 );
   this.height = this.canvasHeight - 140; //Math.min( this.canvasHeight - 40, 600 );
 };
 
